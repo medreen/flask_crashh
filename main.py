@@ -9,13 +9,15 @@ from flask import Flask, request, jsonify
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker
 from database import Base, User
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 allowed_methods = ["GET", "PUT", "POST", "PATCH", "DELETE"]
 DATABASE_URL = "postgresql+psycopg2://postgres:Colesprouse2311!@localhost:5432/flask_crash"
 
-# Connecting sqlalchemy to postgresql using engine function
+# Connecting sqlalchemy to postgresql using engine function_
 engine = create_engine(DATABASE_URL, echo=False)
 
 #Create a session to call query methods
@@ -45,7 +47,7 @@ def get_users():
         for user in users:
             data.append({"id": user.id, "name": user.name, "location": user.location})
 
-            return jsonify({"data": data})
+        return jsonify({"data": data})
     elif request.method.upper() == "POST":
         data = request.get_json()
     #check if the required fields are received
