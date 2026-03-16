@@ -45,17 +45,17 @@ def get_users():
         data = []
 
         for user in users:
-            data.append({"id": user.id, "name": user.name, "location": user.location})
+            data.append({"id": user.id, "name": user.name, "location": user.location, "age": user.age})
 
         return jsonify({"data": data})
     elif request.method.upper() == "POST":
         data = request.get_json()
     #check if the required fields are received
-        if data["name"] == "" or data["location"] == "":
-            return jsonify({"err": "Name and location required"})
+        if data["name"] == "" or data["location"] == "" or data["age"] == "":
+            return jsonify({"err": "All fields required"})
         else: 
             #store users in table using sqlalchemy
-            new_user = User(name = data["name"], location = data["location"])
+            new_user = User(name = data["name"], location = data["location"], age=data["age"])
             my_session.add(new_user)
             my_session.commit()
             return jsonify({"msg": f"Successfully added user {data['name']}"})
