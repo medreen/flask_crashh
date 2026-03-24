@@ -5,6 +5,8 @@
 # Define http methods, POST, GET, PUT, DELETE, PATCH
 # Define status codes
 
+import sentry_sdk
+from flask import Flask
 from flask import Flask, request, jsonify
 from sqlalchemy import create_engine, select
 from flask_jwt_extended import JWTManager,jwt_required,create_access_token
@@ -18,13 +20,22 @@ app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = "medreen2311!"
 
 CORS(app)
+sentry_sdk.init(
+    dsn="https://470f28118277d8dcd133a830ef8e0564@o4511094689628160.ingest.de.sentry.io/4511094764601424",
+    # Add data like request headers and IP for users,
+    # see https://docs.sentry.io/platforms/python/data-management/data-collected/ for more info
+    send_default_pii=True,
+)
 jwt = JWTManager(app)
 
 bcrypt = Bcrypt(app)
 
 allowed_methods = ["GET", "PUT", "POST", "PATCH", "DELETE"]
-DATABASE_URL = "postgresql+psycopg2://postgres:Colesprouse2311!@localhost:5432/flask_auth"
-
+try:
+    DATABASE_URL = "postgresql+psycopg2://postgres:Colesprouse2311!@localhost:5432/flask_auth"
+except Exception as e:
+    pass
+    print("Error connecting to database")
 # Connecting sqlalchemy to postgresql using engine function_
 engine = create_engine(DATABASE_URL, echo=False)
 
@@ -36,7 +47,7 @@ my_session = session()
 Base.metadata.create_all(engine)
 
 @app.route("/", methods = allowed_methods)
-def home():
+def home():       
     if request.method.upper() == "GET":
         msg = {"Flask API Version": "1.0"}
         return jsonify(msg), 200
@@ -45,7 +56,7 @@ def home():
     
 @app.route("/employees", methods = allowed_methods)
 @jwt_required()
-def get_users():
+def get_users():    
     try:
         method = request.method.lower()
         if method == "get":
