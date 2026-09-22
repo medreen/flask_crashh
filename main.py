@@ -70,7 +70,7 @@ def get_users():
                                 "age": employee.age})
 
             return jsonify({"data": employee_list}), 200
-        elif method == "post":
+        elif request.method.lower() == "post":
             # convert json to dictionary
             data = request.get_json()
             # check if all fields are received
@@ -78,8 +78,7 @@ def get_users():
                 return jsonify({"msg": "All fields required"}), 401
             else:
                 # employee_list.append(data)/store employee in employees tables using SQLAlchemypip
-                new_employee = Employee(
-                    name=data["name"], location=data["location"], age=data["age"])
+                new_employee = Employee(name=data["name"], location=data["location"], age=data["age"])
                 my_session.add(new_employee)
                 my_session.commit()
                 my_session.close()
